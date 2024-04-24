@@ -1,0 +1,63 @@
+{% extends 'task/base.html' %}
+
+{% block content %}
+<h1>{{ current_date|date:"l, F j, Y" }}</h1>
+<style>
+    h1 {
+        text-align: center;
+    }
+    .table {
+        margin: auto;
+    }
+    th, td {
+        text-align: center;
+    }
+    .btn-group {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+<form method = "POST" action = '{% url 'home' %}'>
+    {% csrf_token %}
+    <table class = "table table-bordered table-light">
+        <tr>
+            <th>Start By</th>
+            <th>End By</th>
+            <th>Task</th>
+            <th>Note</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        {% if not form.instance.id %}
+        <tr>
+            {% include 'task/save.html' %}
+        </tr>
+        {% endif %}
+        {% for tasks in todotasks %}
+        <tr>
+            {% if form.instance.id == tasks.id %}
+            {% include 'task/save.html' %}
+            {% else %}
+            <td>{{ tasks.start_by }}</td>
+            <td>{{ tasks.end_by }}</td>
+            <td>{{ tasks.task }}</td>
+            <td>{{ tasks.note }}</td>
+            <td>
+                <input type="checkbox" name="task_status" value="{{ tasks.id }}" {% if tasks.status %}checked{% endif %}>
+            </td>            
+            <td>
+                <button formnovalidate class = "btn btn-warning" name = "edit" value = "{{ tasks.id }}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+            </td>
+            <td>
+                <button formnovalidate class = "btn btn-danger" name = "delete" value = "{{ tasks.id }}">
+                    <i class="fa-regular fa-trash-can"></i>
+                </button>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+</form>
+{% endblock %}
